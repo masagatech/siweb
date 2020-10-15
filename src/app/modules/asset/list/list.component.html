@@ -1,0 +1,10 @@
+<p-tabView>
+    <p-tabPanel *ngFor="let item of assetList" header="{{item.name}}">
+        <ul class="assetlist">
+            <li *ngFor="let a of item.data">
+                <img src="{{global.getConfig().document_path}}{{a.filepath}}" pDraggable="cars"
+                (onDragStart)="dragStart($event,a)" (onDragEnd)="dragEnd($event)" alt="" style="height:100px;width:150px;">
+            </li>
+        </ul>
+    </p-tabPanel>
+</p-tabView>

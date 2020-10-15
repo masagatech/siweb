@@ -1,0 +1,43 @@
+#playlist {background-image: url('../../../../assets/img/film_back.png');height:177px;
+    margin: 0px;
+    list-style-type: none;
+    padding: 0px;
+    background-size: 100px 190px;}
+#playlist li {float: left;
+    // border: 1px solid #ff0000;
+    width: 91px;
+    margin-right: 5px;
+    margin-top: 30px;
+    margin-left: 4px;
+    height: 120px;
+    position: relative;}
+#playlist li img{
+    height:101px;
+    width:100%;
+    opacity: 1;
+    transition: .5s ease;
+    backface-visibility: hidden;
+}
+
+#playlist li .middle {
+  transition: .5s ease;
+  opacity: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+#playlist li:hover img {
+  opacity: 0.3;
+}
+
+#playlist li:hover .middle {
+  opacity: 1;
+}
+
+#playlist li .middle .text {
+  color: #000;
+}

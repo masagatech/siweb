@@ -1,0 +1,112 @@
+#layoutWindow{height:360px;position:relative;}
+.layoutBackground{background-color:#000;}
+.grid{background-image: -webkit-linear-gradient(0deg,rgba(255,255,255,.3) 1px,transparent 1px),-webkit-linear-gradient(90deg,rgba(255,255,255,.3) 1px,transparent 1px);
+    background-image: -moz-linear-gradient(0deg,rgba(255,255,255,.3) 1px,transparent 1px),-moz-linear-gradient(90deg,rgba(255,255,255,.3) 1px,transparent 1px);
+    background-image: linear-gradient(0deg,rgba(255,255,255,.3) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.3) 1px,transparent 1px);
+    background-size: 16px 9px,16px 9px;
+    background-position: 0 0,0 0;}
+.segment{position:absolute;}
+/* .segment img:hover{outline: #f26f26 dashed 2px!important} */
+
+#sortable { list-style-type: none; margin: 0; padding: 0; }
+#sortable li { margin: 0 0px 5px 0px; padding: 8px 10px; font-size: 17px; border:1px solid rgba(0,0,0,.125); cursor: move; background-color: #eee;color: #555;}
+
+  .input-group-addon {
+    padding: 3px 12px;
+    font-size: 14px;
+    font-weight: 400;
+    color: #555;
+    text-align: center;
+    background-color: #eee;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-right: 0;
+    width: 66px;
+    white-space: nowrap;
+    vertical-align: middle;
+    display: table-cell;
+  }
+
+  .assetlist {
+    margin:0;
+    padding:0;
+    list-style-type: none;
+}
+.assetlist li{
+    float: left;
+    padding-right:5px;
+}
+.assetlist li img{
+    border: 1px solid #aeaeae;
+    padding:10px;
+}
+
+
+.nwgrip, .negrip, .swgrip, .segrip, .ngrip, .egrip, .sgrip, .wgrip {
+    width: 10px;
+    height: 10px;
+    background-color: #ffffff;
+    border: 1px solid #000000;
+}
+.nwgrip {
+    left: -5px;
+    top: -5px;
+}
+.negrip{
+     top: -5px;
+     right: -5px;
+}
+.swgrip{
+    bottom: -5px;
+    left: -5px;
+}
+.segrip{
+     bottom: -5px;
+    right:-5px;
+}
+.ngrip{
+     top: -5px;
+    left:50%;
+}
+.sgrip{
+     bottom: -5px;
+    left: 50%;
+}
+.wgrip{
+     left:-5px;
+     top:50%;
+}
+.egrip{
+     right:-5px;
+     top:50%;
+}
+
+.segment.focus .ui-resizable-handle {
+  display: block;
+  /* outline: #f26f26 dashed 2px!important; */
+}
+
+.ui-resizable-handle {
+  display: none;
+}
+.focus{
+  outline: #f26f26 dashed 2px!important;
+}
+
+#layoutNavigation{
+  list-style-type: none;
+  margin:0;
+  padding: 0;
+  float: right;
+}
+#layoutNavigation li{
+  float: left;
+  padding-left:15px;
+}
+
+.disabled{
+  opacity: 0.6;
+  cursor: not-allowed;
+}

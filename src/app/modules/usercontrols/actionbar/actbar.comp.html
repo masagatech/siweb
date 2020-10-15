@@ -1,0 +1,18 @@
+<li class="breadcrumb-menu">
+  <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
+    <button type="button" class="btn btn-default text-danger" [disabled]="isloadingfav" *ngIf="showfav"
+      title="{{islocfav ? 'Remove from Favorite' : 'Add to Favorite'}}" data-toggle="modal" (click)="onfav_click()"><i
+        class="fa fa-star{{islocfav ? '':'-o'}}" [ngClass]="{'fa-beat':isloadingfav}"></i></button>
+    <button type="{{item.type ? item.type : 'button'}}" id="act{{i}}" createDir (onCreateEvt)="addShortCut(item, i)"
+      class="btn btn-{{item.bg || 'default'}} text-{{item.color || 'white'}}"
+      title="{{item.text  + ' ' +  item.shortcut ? item.shortcut :'' }}" [disabled]="item.disabled"
+      [ngClass]="{'hide': !item.visible}" *ngFor="let item of buttons;let i=index" data-toggle="modal"
+      (click)="onaction_click(item)"><i class="{{item.iconi ? item.iconi : 'icon-'+ item.icon  }}"></i>
+      &nbsp;{{item.text || 'Button'}}
+
+    </button>
+  </div>
+
+</li>
+
+<button type="submit" style="height: 0px;width: 0px;display: none;" id="fmrsub"></button>

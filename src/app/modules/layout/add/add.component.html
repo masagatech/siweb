@@ -1,0 +1,205 @@
+<ol class="breadcrumb">
+  <app-breadcrumb></app-breadcrumb>
+  <span style="text-transform: capitalize;padding-left: 5px;"></span>
+  <li class="breadcrumb-menu">
+    <app-actionbtn [buttons]="buttons" (onaction)="buttonClicks($event)" [isfav]="isfav"></app-actionbtn>
+  </li>
+</ol>
+<div class="fixed-content">
+  <div class="row">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-12 pr-3 pb-2 text-right">
+              <ul id="layoutNavigation">
+                <li><a [ngClass]="{'disabled':(selectedItem.id>0)}" (click)="addSegment()"><i
+                      class="fa fa-plus"></i></a></li>
+                <li><a [ngClass]="{'disabled':(selectedItem.id==0)}" (click)="cloneSegment()"><i
+                      class="fa fa-clone"></i></a></li>
+                <li><a [ngClass]="{'disabled':(segmentList.length==0)}" (click)="showLayerBox()"><i
+                      class="fa fa-list"></i></a></li>
+                <li><a [ngClass]="{'disabled':(selectedItem.id==0)}" (click)="openModal(popupContainer,'modal-lg')"><i
+                      class="fa fa-edit"></i></a></li>
+                <li><a [ngClass]="{'disabled':(selectedItem.id==0)}" (click)="removeSegment()"><i
+                      class="fa fa-trash"></i></a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="row pl-3" style="overflow-x:auto">
+            <div class="" style="border:25px solid #d3d3d3;">
+              <div id="layoutWindow" [ngClass]="{'grid':enableGrid}" class="layoutBackground ui-widget-content"
+                [ngStyle]="{'width.px':layoutWidth}">
+                <div *ngFor="let item of segmentList"
+                  [ngClass]="{'focus':(selectedItem.id==item.id || item.isselected)}" class="segment"
+                  [ngStyle]="{'width.px':item.width,'height.px':item.height,'left.px':item.x,'top.px':item.y,'z-index':item.zindex}"
+                  id="{{item.id}}" (mousedown)="selectedSegment(item)">
+                  <!-- <img src="{{item.filepath}}" [ngStyle]="{'width.px':(item.width-5),'height.px':(item.height-5)}"> -->
+                  <img
+                    [ngStyle]="{'width.px':item.width,'height.px':item.height,'background-image':'url('+item.filepath+')','background-size':item.fit,'position':'absolute','background-repeat':'no-repeat','background-color':'#000','background-position':'center'}">
+                  <div [ngStyle]="{'display':(selectedItem.id==item.id)?'block':'none'}"
+                    class="ui-resizable-handle ui-resizable-nw grip nwgrip"></div>
+                  <div [ngStyle]="{'display':(selectedItem.id==item.id)?'block':'none'}"
+                    class="ui-resizable-handle ui-resizable-ne grip negrip"></div>
+                  <div [ngStyle]="{'display':(selectedItem.id==item.id)?'block':'none'}"
+                    class="ui-resizable-handle ui-resizable-sw grip swgrip"></div>
+                  <div [ngStyle]="{'display':(selectedItem.id==item.id)?'block':'none'}"
+                    class="ui-resizable-handle ui-resizable-se grip segrip"></div>
+                  <div [ngStyle]="{'display':(selectedItem.id==item.id)?'block':'none'}"
+                    class="ui-resizable-handle ui-resizable-n grip ngrip"></div>
+                  <div [ngStyle]="{'display':(selectedItem.id==item.id)?'block':'none'}"
+                    class="ui-resizable-handle ui-resizable-s grip sgrip"></div>
+                  <div [ngStyle]="{'display':(selectedItem.id==item.id)?'block':'none'}"
+                    class="ui-resizable-handle ui-resizable-e grip egrip"></div>
+                  <div [ngStyle]="{'display':(selectedItem.id==item.id)?'block':'none'}"
+                    class="ui-resizable-handle ui-resizable-w grip wgrip"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card" *ngIf="insertMediaFlag==false && selectedItem.id=='0' && !sortSegment">
+        <div class="card-header">
+          <span>Layout Editor</span>
+        </div>
+        <div class="card-body" style="height:70vh;overflow-y: auto;">
+          <ul class="list-group">
+            <li class="list-group-item">
+              <div class="form-group">
+                <label for="">Name:</label>
+                <input type="text" class="form-control" [(ngModel)]="form.name">
+              </div>
+            </li>
+            <li class="list-group-item">
+              <div class="form-group">
+                <label for="">Select Ratio:</label>
+                <select class="form-control" [(ngModel)]="ratio" (change)="setRatio()">
+                  <option value="">Select Ratio</option>
+                  <option [value]="item.value" *ngFor="let item of ratioList">{{item.code}}</option>
+                </select>
+              </div>
+            </li>
+            <li class="list-group-item">Reference Resolution: {{ratio}}</li>
+            <li class="list-group-item">Enable Grid : <input type="checkbox" [(ngModel)]="enableGrid"></li>
+            <li class="list-group-item">Aspect Ratio : <input type="checkbox" (change)="onAspectChange($event)"
+                [(ngModel)]="enableRatio"></li>
+          </ul>
+        </div>
+      </div>
+      <div class="card" *ngIf="insertMediaFlag==false && selectedItem.id!='0' && !sortSegment">
+        <div class="card-header">
+          Asset Settings
+        </div>
+        <div class="card-body" style="height:70vh;overflow-y: auto;">
+          <ul class="list-group">
+            <li class="list-group-item">
+              <div class="form-group">
+                <label for="">Fitting Option:</label>
+                <select class="form-control" [(ngModel)]="selectedItem.fit">
+                  <option [value]="'cover'">Crop</option>
+                  <option [value]="'contain'">Fit</option>
+                  <option [value]="'100% 100%'">Stretch</option>
+                </select>
+              </div>
+            </li>
+            <li class="list-group-item">
+              <div class="input-group">
+                <span class="input-group-addon">Top</span>
+                <input type="number" min="0" [max]="selectedItem.max_y" [(ngModel)]="selectedItem.segment_top_in_pixel"
+                  (change)="changeSegment(selectedItem)" class="form-control">
+              </div>
+            </li>
+            <li class="list-group-item">
+              <div class="input-group">
+                <span class="input-group-addon">Left</span>
+                <input type="number" min="0" [max]="selectedItem.max_x" [(ngModel)]="selectedItem.segment_left_in_pixel"
+                  (change)="changeSegment(selectedItem)" class="form-control">
+              </div>
+            </li>
+            <li class="list-group-item">
+              <div class="input-group">
+                <span class="input-group-addon">Width</span>
+                <input type="number" min="0" [(ngModel)]="selectedItem.segment_width_in_pixel"
+                  (change)="changeSegment(selectedItem)" class="form-control">
+              </div>
+            </li>
+            <li class="list-group-item">
+              <div class="input-group">
+                <span class="input-group-addon">Height</span>
+                <input type="number" min="0" [(ngModel)]="selectedItem.segment_height_in_pixel"
+                  (change)="changeSegment(selectedItem)" class="form-control">
+              </div>
+            </li>
+            <li class="list-group-item">
+              <div class="row">
+                <div class="col-md-6"><button type="button" class="btn btn-info btn-block text-white"
+                    (click)="changeAsset()">Change</button>
+                </div>
+                <div class="col-md-6"><button type="button" class="btn btn-danger btn-block"
+                    (click)="removeSegment()">Remove</button></div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="card" *ngIf="insertMediaFlag && !sortSegment">
+        <div class="card-header">
+          <span>Insert Media</span>
+        </div>
+        <div class="card-body" style="height:70vh;">
+          <div class="row">
+            <div class="col-md-12">
+              <div class="form-group">
+                <label for="">Type : </label>
+                <select name="type" id="type" class="form-control" [(ngModel)]="assetType" (change)="loadAssetByType()">
+                  <option value="">Select Type</option>
+                  <option value="1">Image</option>
+                  <option value="2">Video</option>
+                  <option value="3">Audio</option>
+                  <option value="4">Document</option>
+                  <option value="5">Web Page</option>
+                  <option value="6">Playlist</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-12 p-0 pl-3 pt-3" style="height:50vh;overflow-y:auto;">
+              <ul class="assetlist">
+                <li *ngFor="let a of assetList">
+                  <img src="{{global.getConfig().document_path}}{{a.filepath}}" alt="{{a.name}}"
+                    style="height:100px;width:150px;" (click)="onClickSelectAsset(a)">
+                </li>
+              </ul>
+            </div>
+            <div class="col-md-12 p-0 text-right pt-2">
+              <button type="button" class="btn btn-danger btn-sm mr-2" (click)="deselectSegment()">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card" *ngIf="sortSegment && insertMediaFlag==false && selectedItem.id=='0'">
+        <div class="card-header">
+          <span>Segment Layering</span>
+        </div>
+        <div class="card-body" style="height:70vh;">
+          <ul id="sortable">
+            <li *ngFor="let a of segmentList" id="{{a.id}}" (mouseover)="a.isselected=true"
+              (mouseout)="a.isselected=false">
+              {{a.filename}}</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #template>
+  <div class="modal-header">
+    <h4 class="modal-title">Edit Asset</h4>
+  </div>
+  <div class="modal-body p-0">
+    <app-add [assetid]="selectedItem.assetid" [integrate]="true" (onAction)="editedAssetData($event)"></app-add>
+  </div>
+</ng-template>

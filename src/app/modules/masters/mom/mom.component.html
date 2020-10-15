@@ -1,0 +1,285 @@
+<ol class="breadcrumb">
+    <app-breadcrumb></app-breadcrumb>
+    <span style="text-transform: capitalize;padding-left: 5px;"> /
+        {{selectedMaster.name}}</span>
+
+    <li class="breadcrumb-menu">
+        <app-actionbtn [buttons]="buttons" (onaction)="buttonClicks($event)" [isfav]="isfav"></app-actionbtn>
+
+    </li>
+</ol>
+<div class="fixed-content">
+    <div class="card-body p-0 mb-2">
+        <div class="row">
+            <div class="col-md-3">
+                <p-scrollPanel [style]="{width: '100%', height: 'calc(100vh - 120px)'}">
+                    <p-table #dt1 [value]="groups">
+                        <ng-template pTemplate="header">
+                            <tr>
+                                <th translate="">Masters</th>
+                            </tr>
+                            <tr>
+                                <th>
+                                    <input class="form-control" pInputText type="text"
+                                        (input)="dt1.filter($event.target.value, 'name', 'contains')">
+                                </th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-rowData>
+                            <tr [ngClass]="{'active': rowData.code === mom.groups}" class="active"
+                                (click)="onRowClick(rowData)">
+                                <td>{{rowData.name}}</td>
+                            </tr>
+
+                        </ng-template>
+
+
+                    </p-table>
+                </p-scrollPanel>
+            </div>
+            <div class="col-md-9">
+                <p-table *ngIf="showGrid" #dt [value]="momList" [paginator]="true" [rows]="20" sortMode="multiple">
+                    <ng-template pTemplate="header">
+                        <div>
+
+                        </div>
+                        <tr>
+                            <th translate style="width:80px" class="text-center">Action</th>
+                            <th style="width:100px" translate>Code</th>
+                            <th translate>Name</th>
+                            <th translate>Description</th>
+                            <th style="width:100px" class="text-center" translate>Active</th>
+                        </tr>
+                        <tr>
+                            <th>
+
+                            </th>
+                            <th>
+                                <input class="form-control" type="text"
+                                    (input)="dt.filter($event.target.value, 'code', 'contains')">
+                            </th>
+                            <th>
+                                <input class="form-control" pInputText type="text"
+                                    (input)="dt.filter($event.target.value, 'name', 'contains')">
+                            </th>
+                            <th>
+                                <input class="form-control" pInputText type="text"
+                                    (input)="dt.filter($event.target.value, 'description', 'contains')">
+                            </th>
+
+                            <!-- <th>
+                                  <input class="form-control" pInputText type="text"
+                                  (input)="dt.filter($event.target.value, 'description', 'contains')">
+                              </th> -->
+
+                            <th class="text-center">
+                                <!-- dt.filter($event.value, 'country_active', 'equals') -->
+                                <select class="form-control" pInputText (change)="onchange($event.target.value, dt)">
+                                    <option [value]="'all'">All</option>
+                                    <option [value]="'1'">Yes</option>
+                                    <option [value]="'0'"> No</option>
+                                </select>
+                            </th>
+
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-rowData let-item>
+                        <tr>
+                            <td class="text-center"><button class="btn btn-xs text-white btn-info" translate=""
+                                    (click)="edit(item);"><i class="fa fa-edit"></i></button></td>
+                            <td>{{item.code}}</td>
+                            <td style="display:none;">{{item.group}}</td>
+                            <td>{{item.name}}</td>
+                            <td>{{item.description}}</td>
+                            <td class="text-center">{{item.active ? 'Yes' : 'No'}}</td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<ng-template #template>
+    <div class="modal-header">
+        <h4 class="modal-title" style="text-transform: capitalize;">{{selectedMaster.name}}</h4>
+        <button type="button" class="close" (click)="closeModal()" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <label class="col-form-label" translate>Code</label><span class="text-danger">*</span>
+                    <div class="controls">
+                        <div class="input-prepend input-group">
+                            <input class="form-control" [(ngModel)]="mom.code" size="16" id="code" name="code"
+                                tabindex="1" type="text" (blur)="checkAvailability()"
+                                placeholder="{{lblrow1 | translate }}" [disabled]="mom.id>0" />
+                        </div>
+                        <small class="text-danger" translate="" *ngIf="codeExist">code_exist</small>
+                    </div>
+
+                </div>
+                <div class="form-group">
+                    <label class="col-form-label" translate="">Name</label><span class="text-danger">*</span>
+                    <div class="controls">
+                        <div class="input-prepend input-group">
+                            <input class="form-control" [(ngModel)]="mom.name" size="16" id="name" type="text"
+                                tabindex="2" placeholder="{{'Name' | translate }}" />
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-form-label" translate="">Description</label>
+                    <div class="controls">
+                        <div class="input-prepend input-group">
+                            <input class="form-control" [(ngModel)]="mom.description" size="16" type="text" tabindex="3"
+                                placeholder="{{'Description' | translate }}" />
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group" *ngIf="isClassification">
+                    <label class="col-form-label" translate="">Color</label>
+                    <div class="controls">
+                        <div class="input-prepend input-group">
+                            <input class="form-control" [(ngModel)]="mom.remark" size="16" type="text" tabindex="3"
+                                placeholder="{{'remark' | translate }}" />
+                        </div>
+                    </div>
+                </div>
+
+                <p-scrollPanel [style]="{width: '100%', height: '200px'}" *ngIf="mom.groups=='grp'">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div>
+
+                                <div>
+                                    <div *ngFor="let l of localregionalchainList; let i=index">
+                                        <input [(ngModel)]="l.checked" size="16" id="parent{{i}}" input type="checkbox"
+                                            name="parent{{i}}" />
+                                        &nbsp;{{ l.name }} &nbsp;
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </p-scrollPanel>
+                <div class="form-group">
+                    <div class="controls">
+                        <div class="input-prepend input-group">
+                            <label>
+                                <p-checkbox tabindex="4" name="Active" value="Active" label="{{'Active' | translate}}"
+                                    [(ngModel)]="mom.active" binary="mom.active">
+                                </p-checkbox>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-danger btn-sm" type="button" translate="" (click)="clear()" tabindex="6"><i
+                class="fa fa-rotate-left"></i>
+            {{'Reset' | translate}}</button>
+        <button class="btn text-white btn-success btn-sm" [disabled]="codeExist" (click)="save();" tabindex="5"><i
+                class="fa fa-save"></i>&nbsp;
+            {{'Save' |
+        translate}}</button>
+
+    </div>
+</ng-template>
+<!-- CHINMAY pop-up to add new group -->
+
+<!-- <ng-template #template1>
+
+    <div class="modal-header">
+        <h4 class="modal-title" style="text-transform: capitalize;">Group</h4>
+        <button type="button" class="close" (click)="closeModal()" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <label class="col-form-label" translate>code</label><span class="text-danger">*</span>
+                    <div class="controls">
+                        <div class="input-prepend input-group">
+                            <input class="form-control" [(ngModel)]="mom.code" size="16" id="code" name="code"
+                                tabindex="1" type="text" (blur)="checkAvailability()"
+                                placeholder="{{lblrow1 | translate }}" [disabled]="mom.id>0" />
+                        </div>
+                        <small class="text-danger" translate="" *ngIf="codeExist">code_exist</small>
+                    </div>
+
+                </div>
+                <div class="form-group">
+                    <label class="col-form-label" translate="">name</label><span class="text-danger">*</span>
+                    <div class="controls">
+                        <div class="input-prepend input-group">
+                            <input class="form-control" [(ngModel)]="mom.name" size="16" id="name" type="text"
+                                tabindex="2" placeholder="{{'name' | translate }}" />
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-form-label" translate="">description</label>
+                    <div class="controls">
+                        <div class="input-prepend input-group">
+                            <input class="form-control" [(ngModel)]="mom.description" size="16" type="text" tabindex="3"
+                                placeholder="{{'description' | translate }}" />
+                        </div>
+                    </div>
+                </div>
+                <label translate="">Local/Regional chain</label><span class="text-danger"
+                    *ngIf="mom.groups=='grp'">*</span>
+                <p-scrollPanel [style]="{width: '100%', height: '200px'}" *ngIf="mom.groups=='grp'">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div>
+
+                                <div>
+                                    <div *ngFor="let l of localregionalchainList; let i=index">
+                                        <input [(ngModel)]="l.checked" size="16" id="parent{{i}}" input type="checkbox"
+                                            name="parent{{i}}" />
+                                        &nbsp;{{ l.name }} &nbsp;
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </p-scrollPanel>
+                <div class="form-group">
+                    <div class="controls">
+                        <div class="input-prepend input-group">
+                            <label>
+                                <p-checkbox tabindex="4" name="Active" value="Active" label="{{'active' | translate}}"
+                                    [(ngModel)]="mom.active" binary="mom.active">
+                                </p-checkbox>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="modal-footer">
+        <button class="btn btn-danger btn-sm" type="button" translate="" (click)="clear()" tabindex="6"><i
+                class="fa fa-rotate-left"></i>
+            {{'reset' | translate}}</button>
+        <button class="btn text-white btn-success btn-sm" [disabled]="codeExist" (click)="saveNewGroup();"
+            tabindex="5"><i class="fa fa-save"></i>&nbsp;
+            {{'save' |
+        translate}}</button>
+
+    </div>
+</ng-template> -->
+<!-- CHINMAY END ofpop-up to add new group -->

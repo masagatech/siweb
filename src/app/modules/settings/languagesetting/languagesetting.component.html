@@ -1,0 +1,49 @@
+<div style="margin: -8px!important;">
+  <ol class="breadcrumb">
+    <app-breadcrumb></app-breadcrumb>
+    <!-- Breadcrumb Menu-->
+    <span class="text-red" style="margin-left:10px" *ngIf="!isGrid"><i class="fa fa-warning text-red"></i> Be careful
+      while editing and updating.
+      <span class="text-success">Change value in <strong>'secondaryVal'</strong></span>
+    </span>
+    <li class="breadcrumb-menu">
+      <app-actionbtn [buttons]="buttons" (onaction)="buttonClicks($event)" [isfav]="isfav"></app-actionbtn>
+
+    </li>
+  </ol>
+  <div class="card-body p-1 mb-2">
+    <p-table #dt [value]="languageList" *ngIf="isGrid" [paginator]="false" [rows]="15" sortMode="multiple">
+      <ng-template pTemplate="header">
+        <tr>
+          <th style="width:100px" translate>key</th>
+          <th translate>eng</th>
+          <th translate>
+            <select class="form-control" (change)="onLangChange($event)" [(ngModel)]="langpref"
+              style="margin-left: 5px;" required>
+              <option [value]="''">Select Language</option>
+              <option *ngFor="let item of languageprefrenceList" [value]="item.code">{{item.name}}</option>
+            </select>
+          </th>
+        </tr>
+        <tr *ngIf="selectedLanguage == 'en'">
+          <td><input class="form-control" tabindex="3" [(ngModel)]="ind.key"></td>
+          <td><input class="form-control" tabindex="3" [(ngModel)]="ind.primaryVal">
+          </td>
+          <td><button class="btn btn-success btn-sm" (click)="addNewKey()"><i class="fa fa-plus"></i></button>
+          </td>
+
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-rowData let-item>
+        <tr>
+          <td title="{{item.key}}"><input class="form-control" tabindex="3" [(ngModel)]="item.key"></td>
+          <td>{{item.primaryVal}}</td>
+          <td><input class="form-control" tabindex="3" [(ngModel)]="item.secondaryVal">
+          </td>
+        </tr>
+      </ng-template>
+
+    </p-table>
+    <textarea *ngIf="!isGrid" style="width: 100%;height: 450px;" [(ngModel)]="languageList_text"></textarea>
+  </div>
+</div>

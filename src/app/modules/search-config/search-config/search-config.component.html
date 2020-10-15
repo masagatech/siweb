@@ -1,0 +1,272 @@
+<div style="margin:-8px!important">
+  <ol class="breadcrumb">
+    <app-breadcrumb></app-breadcrumb>
+    <li class="breadcrumb-menu">
+      <app-actionbtn [buttons]="buttons" (onaction)="buttonClicks($event)"></app-actionbtn>
+    </li>
+  </ol>
+  <div class="fixed-content">
+    <div class="card-body p-0">
+      <div class="row">
+        <div class="col-md-4">
+          <div class="form-group">
+            <label for="">Select Module</label>
+            <select class="form-control" style="text-transform: capitalize" [(ngModel)]="moduleName" (change)="getModuleData();">
+              <option [value]="''">Select Module</option>
+              <option [value]="a.module" *ngFor="let a of moduleList">{{a.module}}</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+
+        <div class="col-md-4">
+          <div *ngIf="moduleData!=''">
+            <div class="form-group">
+              <label for="">Column List</label>
+            </div>
+            <div style="display: flex">
+              <div cdkDropList [cdkDropListData]="moduleData" #firstList="cdkDropList" (cdkDropListDropped)="drop($event)"
+                style="width: 100%">
+                <div *ngFor="let item of moduleData;let i=index;" [ngClass]="{'selected': selectedColumn.column_name == item.column_name}"
+                  class="pop" cdkDrag (click)="onColumnClick(item)">
+                  <span class="newOrder"> {{i + 1}} </span>
+                  {{item.label}} <small class="text-danger" style="
+              position: absolute;
+              right: 14px;
+              font-size: 12px;
+              font-weight: bold;
+          "
+                    *ngIf="item.active == 0">Inactive</small></div>
+              </div>
+            </div>
+          </div>
+          <div style="width: 100%; display:block;" *ngIf="newEntryFlag">
+            <div class="pop btn btn-warning" style="background-image: none; background-color: orange; cursor: pointer;"
+              (click)="openModal(template);">
+              <span class="newOrder"> + </span>
+              Add New</div>
+          </div>
+        </div>
+        <div class="col-md-8" *ngIf="moduleData!=''">
+          <p-panel header="Grid Properties" [styleClass]="'mb-2'">
+            <div class="row">
+              <div class="col-md-12">
+                <b>Sorting</b>
+                <div cdkDropList [cdkDropListData]="sortArray" (cdkDropListDropped)="sortDrop($event)" style="width: 100%">
+                  <div *ngFor="let item of sortArray;let i=index;" [ngClass]="{'selected': selectedColumn.column_name == item.column_name}"
+                    class="pop" cdkDrag>
+                    <span class="newOrder"> {{i + 1}} </span>
+                    <div class="col-md-5" (click)="onSortColumnClick(item)">
+                      {{item.label}}
+                    </div>
+                    <div class="col-md-7 text-right">
+                      <select [(ngModel)]="item.sortType" (change)="onSortTypeChange(item);">
+                        <option [value]="'ASC'">Ascending</option>
+                        <option [value]="'DESC'">Descending</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </p-panel>
+          <p-panel header="Column Properties">
+            <table class="table table-bordered reducepadd" *ngIf="selectedColumn.id > -1">
+              <tr>
+                <th style="width:200px">Property</th>
+                <th>Value</th>
+              </tr>
+              <tr>
+                <td class="white">Column Field</td>
+                <td><input type="text" class="form-control" [(ngModel)]="selectedColumn.column_name">
+                </td>
+              </tr>
+              <tr>
+                <td class="white">Name</td>
+                <td><input type="text" class="form-control" [(ngModel)]="selectedColumn.label"></td>
+              </tr>
+              <tr>
+                <td class="white">Ad. Filter Datatype</td>
+                <td> <select class="form-control" style="text-transform: capitalize" [(ngModel)]="selectedColumn.datatype">
+                    <option [value]="'input'">Text/Number</option>
+                    <option [value]="'ddl'">DropDown List</option>
+                    <option [value]="'autocomplete'">Auto Complete</option>
+                    <option [value]="'datepicker'">Date Picker</option>
+
+                  </select></td>
+              </tr>
+              <tr *ngIf="selectedColumn.datatype=='ddl' || selectedColumn.datatype=='autocomplete'">
+                <td class="white">Ad. Filter Data source</td>
+                <td>
+                  <input type="text" class="form-control" [(ngModel)]="extraData.datasource">
+                </td>
+              </tr>
+              <tr>
+                <td class="white">Column View Type</td>
+                <td> <select class="form-control" style="text-transform: capitalize" [(ngModel)]="selectedColumn.column_type">
+                    <option [value]="1">Plain Text</option>
+                    <option [value]="2">Date</option>
+                    <option [value]="3">Link - Open In new window</option>
+                    <option [value]="4">Link - Open In Dialogbox</option>
+
+                  </select></td>
+              </tr>
+              <tr>
+                <td class="white">Style</td>
+                <td>
+                  <input type="text" class="form-control" [(ngModel)]="selectedColumn.stylejson">
+                </td>
+              </tr>
+              <tr>
+                <td class="white">Case</td>
+                <td>
+                  <input type="text" class="form-control" (blur)="oncaseChange($event)" [(ngModel)]="extraData.case">
+                  <small>Eg. true?'Yes':'No'</small>
+                </td>
+              </tr>
+              <tr>
+                <td class="white">Active</td>
+                <td>
+                  <p-checkbox name="active" [(ngModel)]="selectedColumn.isactive" binary="true"></p-checkbox>
+                </td>
+              </tr>
+              <tr>
+                <td class="white">Default Filter</td>
+                <td>
+                  <div class="row">
+                    <div class="col-md-2">
+                      <p-checkbox name="active" [(ngModel)]="selectedColumn.isfilter" binary="true" (onChange)="oncheckchange($event)"></p-checkbox>
+                    </div>
+                    <div class="col-md-5">
+                      <select class="form-control" *ngIf="selectedColumn.isfilter" [(ngModel)]="extraData.search"
+                        (change)="onchange($event)">
+                        <option [value]="'='">Equals</option>
+                        <option [value]="'LIKE'">Contains</option>
+                      </select>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="white">Default Sort</td>
+                <td>
+                  <div class="row">
+                    <div class="col-md-2">
+                      <p-checkbox name="active" [(ngModel)]="selectedColumn.issort" binary="true" (onChange)="onSortChange($event);"></p-checkbox>
+                    </div>
+                    <div class="col-md-5">
+                      <select class="form-control" *ngIf="selectedColumn.issort" (change)="onSortOrderChange($event);"
+                        [(ngModel)]="extraData.sort[1]">
+                        <option [value]="'ASC'">Ascending</option>
+                        <option [value]="'DESC'">Descending</option>
+                      </select>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="white">Default Selected</td>
+                <td>
+                  <p-checkbox name="active" [(ngModel)]="selectedColumn.defaultselected" binary="true"></p-checkbox>
+                </td>
+              </tr>
+              <tr>
+                <td class="white">Fixed Selected</td>
+                <td>
+                  <p-checkbox name="active" [(ngModel)]="selectedColumn.fixedselected" binary="true"></p-checkbox>
+                </td>
+              </tr>
+              <tr>
+                <td class="white">Hidden</td>
+                <td>
+                  <p-checkbox name="active" [(ngModel)]="selectedColumn.hidden" binary="true"></p-checkbox>
+                </td>
+              </tr>
+              <tr>
+                <td class="white">
+                  <select class="form-control" (change)="onchange($event)" [(ngModel)]="extraData.allowType">
+                    <option [value]="'allow'">Allow</option>
+                    <option [value]="'disallow'">Disallow</option>
+                  </select>
+                </td>
+                <td>
+                  <div class="row">
+                    <div class="col-md-1" *ngFor="let item of signArray">
+
+                      <p-checkbox name="{{item.name}}" (onChange)="oncheckchange($event)" [(ngModel)]="item.checked"
+                        label="{{item.sign}}" binary="item.checked"></p-checkbox>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </p-panel>
+        </div>
+      </div>
+    </div>
+  </div>
+  <ng-template #template>
+    <div class="modal-header">
+      <h4 class="modal-title" translate="">add_column</h4>
+      <button type="button" class="close" (click)="closeModal();" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <form name="form" (ngSubmit)="f.form.valid && addNewColumn()" #f="ngForm" novalidate>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="form-group">
+              <label translate=""> {{'column_name' | translate}} <span class="text-danger">*</span></label>
+              <input class="form-control" name="columnName" #columnName="ngModel" [(ngModel)]="columnData.columnName"
+                size="30" type="text" autofocus="true" [ngClass]="{ 'is-invalid':  f.submitted && (columnName.dirty || columnName.touched) &&  columnName.invalid }"
+                placeholder="{{'column_name' | translate}}" required>
+              <div *ngIf="(columnName.dirty || columnName.touched) &&  columnName.invalid" class="text-danger">
+                <div *ngIf="columnName.errors.required">Column Name is required</div>
+                <div *ngIf="!columnName.errors.required && columnName.dirty">Enter valid Column Name</div>
+              </div>
+            </div>
+            <div class="form-group">
+              <p-checkbox name="active" [(ngModel)]="columnData.active" label="Active" binary="true"></p-checkbox>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-success btn-sm"><i class="fa fa-save"></i>&nbsp; {{'add' |
+          translate}}</button>
+      </div>
+    </form>
+  </ng-template>
+  <ng-template #moduleTemplate>
+    <div class="modal-header">
+      <h4 class="modal-title" translate="">add_module</h4>
+      <button type="button" class="close" (click)="closeModal();" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <form name="form" (ngSubmit)="f.form.valid && addNewModule()" #f="ngForm" novalidate>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="form-group">
+              <label translate=""> {{'module_name' | translate}} <span class="text-danger">*</span></label>
+              <input class="form-control" name="moduleName" #moduleName="ngModel" [(ngModel)]="moduleTitle" size="30"
+                type="text" autofocus="true" [ngClass]="{ 'is-invalid':  f.submitted && (moduleName.dirty || moduleName.touched) &&  moduleName.invalid }"
+                placeholder="{{'module_name' | translate}}" required>
+              <div *ngIf="(moduleName.dirty || moduleName.touched) &&  moduleName.invalid" class="text-danger">
+                <div *ngIf="moduleName.errors.required">Module Name is required</div>
+                <div *ngIf="!moduleName.errors.required && moduleName.dirty">Enter valid Module Name</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-success btn-sm"><i class="fa fa-save"></i>&nbsp; {{'add' |
+          translate}}</button>
+      </div>
+    </form>
+  </ng-template>
+</div>

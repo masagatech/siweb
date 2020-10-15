@@ -1,0 +1,206 @@
+<form name="form" (ngSubmit)="f.form.valid && save()" #f="ngForm" novalidate>
+  <ol class="breadcrumb">
+    <app-breadcrumb></app-breadcrumb>
+    <!-- Breadcrumb Menu-->
+    <li class="breadcrumb-menu d-md-down-none">
+      <app-actionbtn [buttons]="buttons" (onaction)="buttonClicks($event)" [showfav]="false" [isfav]="isfav">
+      </app-actionbtn>
+
+    </li>
+  </ol>
+  <div class="col-md-12">
+    <div class="row">
+      <div class="col-md-5">
+        <div class="form-group">
+          <label for="" translate="">company_name</label><span class="text-danger">*</span>
+          <input type="text" class="form-control" [(ngModel)]="generaldata.company_name" tabindex="1" autofocus="on"
+            name="company_name" #company_name="ngModel"
+            [ngClass]="{ 'is-invalid': f.submitted &&  company_name.invalid }"
+            pattern="^[-a-zA-Z0-9-()]+(\s+[-a-zA-Z0-9-()]+)*$" placeholder="{{'company_name' | translate}}" required>
+
+          <div *ngIf="f.submitted && company_name.invalid" class="text-danger">
+            <div *ngIf="company_name.errors.required">Company name is required</div>
+            <div *ngIf="!company_name.errors.required && company_name.dirty">Enter valid Company name</div>
+          </div>
+
+        </div>
+      </div>
+      <div class="col-md-5">
+        <div class="form-group">
+          <label for="" translate="">choose_decimal_point</label><span class="text-danger">*</span>
+          <select name="decimal" #decimal="ngModel" class="form-control" pInputText [(ngModel)]="generaldata.decimal"
+            required>
+            <option [value]="''" translate="">Select Decimal Type</option>
+            <option [value]="1" translate="">0.1</option>
+            <option [value]="2" translate="">0.01</option>
+            <option [value]="3" translate=""> 0.001</option>
+            <option [value]="4" translate=""> 0.0001</option>
+          </select>
+          <div *ngIf="f.submitted && decimal.invalid" class="text-danger">
+            <div *ngIf="decimal.errors.required">Decimal selection is required</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- <div class="form-group">
+          <label for="" translate="">logo</label><span class="text-danger">*</span><br />
+          <p-fileUpload mode="basic" name="demo[]" url="./upload.php" accept="image/*" maxFileSize="1000000" (onUpload)="onBasicUpload($event)">
+          </p-fileUpload>
+    </div> -->
+    <div class="row">
+      <div class="col-md-5">
+        <div class="form-group">
+          <label for="" translate="">address_line_1</label><span class="text-danger">*</span>
+          <input type="text" class="form-control" [(ngModel)]="generaldata.address1" tabindex="3" name="address1"
+            #address1="ngModel" [ngClass]="{ 'is-invalid': f.submitted &&  address1.invalid }"
+            placeholder="{{'address_line_1' | translate}}" required>
+          <div *ngIf="f.submitted && address1.invalid" class="text-danger">
+            <div *ngIf="address1.errors.required" translate="">{{'address_line_1' | translate}} {{'is_req' |
+              translate}}</div>
+            <div *ngIf="!address1.errors.required && address1.dirty" translate="">{{'enter_val' | translate}}
+              {{'address_line_1' | translate}}
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+
+      <div class="col-md-5">
+        <div class="form-group">
+          <label for="" translate="">choose_date_format </label><span class="text-danger">*</span>
+          <select name="dateformat" #dateformat="ngModel" class="form-control" pInputText
+            [(ngModel)]="generaldata.dateformat" required>
+            <option [value]="''" translate="">choose_date_format</option>
+            <option [value]="a.code" *ngFor="let a of dateformatList">{{a.name}}</option>
+          </select>
+          <div *ngIf="f.submitted && dateformat.invalid" class="text-danger">
+            <div *ngIf="dateformat.errors.required" translate="">{{'date_format' | translate}} {{'is_req' | translate}}
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="row">
+      <div class="col-md-5">
+        <div class="form-group">
+          <label for="" translate="">address_line_2</label>
+          <input type="text" class="form-control" name="address2" [(ngModel)]="generaldata.address2" tabindex="4"
+            placeholder="{{'address_line_2' | translate}}">
+        </div>
+
+      </div>
+      <div class="col-md-5">
+        <div class="form-group">
+          <label for="" translate="">login_atmt</label><span class="text-danger">*</span>
+          <input type="text" class="form-control" [(ngModel)]="generaldata.loginattempt" tabindex="5"
+            name="loginattempt" #loginattempt="ngModel"
+            [ngClass]="{ 'is-invalid': f.submitted &&  loginattempt.invalid }" pattern="^[0-9]*"
+            placeholder="{{'loginattempt' | translate}}" required>
+          <div *ngIf="f.submitted && loginattempt.invalid" class="text-danger">
+            <div *ngIf="loginattempt.errors.required" translate=""> {{'loginattempt' | translate}} {{'is_req' |
+              translate}}
+            </div>
+            <div *ngIf="!loginattempt.errors.required && loginattempt.dirty" translate="">{{'enter_val' | translate}}
+              {{'loginattempt' | translate}}
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="row">
+      <div class="col-md-5">
+        <div class="form-group">
+          <label for="" translate="">telephone_no</label><span class="text-danger">*</span>
+          <input type="text" class="form-control" [(ngModel)]="generaldata.telephone" tabindex="5" name="telephone"
+            #telephone="ngModel" [ngClass]="{ 'is-invalid': f.submitted &&  telephone.invalid }" pattern="^[0-9]*"
+            placeholder="{{'telephone_no' | translate}}" required>
+          <div *ngIf="f.submitted && telephone.invalid" class="text-danger">
+            <div *ngIf="telephone.errors.required" translate=""> {{'telephone_no' | translate}} {{'is_req' |
+              translate}}
+            </div>
+            <div *ngIf="!telephone.errors.required && telephone.dirty" translate="">{{'enter_val' | translate}}
+              {{'telephone_no' | translate}}
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+
+      <div class="col-md-5">
+        <div class="form-group">
+          <label for="" translate="">itr_rate</label><span class="text-danger">*</span>
+          <input type="text" class="form-control" [(ngModel)]="generaldata.interestrate" tabindex="5"
+            name="interestrate" #interestrate="ngModel"
+            [ngClass]="{ 'is-invalid': f.submitted &&  interestrate.invalid }" numbersOnly
+            placeholder="{{'itr_rate' | translate}}" required>
+          <div *ngIf="f.submitted && interestrate.invalid" class="text-danger">
+            <div *ngIf="interestrate.errors.required" translate=""> {{'itr_rate' | translate}} {{'is_req' |
+                translate}}
+            </div>
+            <div *ngIf="!interestrate.errors.required && interestrate.dirty" translate="">{{'enter_val' | translate}}
+              {{'itr_rate' | translate}}
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="row">
+      <div class="col-md-5">
+        <div class="form-group">
+          <label for="" translate="">default_currency</label><span class="text-danger">*</span>
+          <select class="form-control" [(ngModel)]="generaldata.currency" tabindex="6" name="currency"
+            #currency="ngModel" [ngClass]="{ 'is-invalid': f.submitted && currency.invalid }"
+            [disabled]="generaldata.currency!=''" required>
+            <option [value]="''">Select Currency</option>
+            <option [value]="a.id" *ngFor="let a of currencyList">{{a.name}}</option>
+          </select>
+          <div *ngIf="f.submitted && currency.invalid" class="text-danger">
+            <div *ngIf="currency.errors.required" translate="">{{'currency' | translate}} {{'is_req' | translate}}
+            </div>
+            <div *ngIf="!currency.errors.required && currency.dirty" translate="">{{'enter_val' | translate}}
+              {{'currency' | translate}}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-5">
+        <div class="form-group">
+
+          <label for="" translate="">cal_api</label>
+          <br>
+          <!-- <p-checkbox name="enableApi" value="1" label="{{'cal_api' | translate}}" [(ngModel)]="enableApi"
+            binary="enableApi" tabindex="4"></p-checkbox> -->
+
+          <p-inputSwitch name="enableApi1" (onChange)="handleBevChange($event)" [(ngModel)]="enableApi"
+            binary="enableApi"></p-inputSwitch>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-5">
+        <div class="form-group">
+          <label for="" translate="">default_timezone</label><span class="text-danger">*</span>
+          <select class="form-control" [(ngModel)]="generaldata.timezone" tabindex="7" name="timezone"
+            #timezone="ngModel" [ngClass]="{ 'is-invalid': f.submitted && timezone.invalid }" required>
+            <option [value]="''">Select Timezone</option>
+            <option [value]="a.id" *ngFor="let a of timezoneList">{{a.name}}</option>
+          </select>
+          <div *ngIf="f.submitted && timezone.invalid" class="text-danger">
+            <div *ngIf="timezone.errors.required">{{'tinezone' | translate}} {{'is_req' | translate}}
+            </div>
+            <div *ngIf="!timezone.errors.required && timezone.dirty">{{'enter_val' | translate}} {{'tinezone' |
+              translate}}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>

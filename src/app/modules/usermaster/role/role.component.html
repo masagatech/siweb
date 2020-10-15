@@ -1,0 +1,142 @@
+<ol class="breadcrumb">
+  <app-breadcrumb></app-breadcrumb>
+  <!-- Breadcrumb Menu-->
+  <li class="breadcrumb-menu d-md-down-none">
+    <app-actionbtn [buttons]="buttons" (onaction)="buttonClicks($event)" [isfav]="isfav"></app-actionbtn>
+
+  </li>
+</ol>
+<div class="fixed-content">
+
+  <div class="card-body  p-0">
+    <div class="row">
+      <div class="col-md-6">
+        <app-grid [controlName]="'role'" [isAdvanceSearch]="false"
+          #grid [api]="'/role'" [apiFlag]="" [actionButtons]="gridButtons" (onAction)="onAction($event)"></app-grid>
+      </div>
+      <div class="col-md-6">
+        <div>
+          <h3 *ngIf="selectdRole"><span class="">Selected Role : {{selectdRole ? selectdRole.rolename : 'None'}}</span></h3>
+
+          <div class="form-group">
+            <div *ngIf="selectdRole">
+              <input type="checkbox" [(ngModel)]="checkallchk" (ngModelChange)="checkAll()">
+              &nbsp;<span translate="">selectall</span>
+              <div class="fixedheight">
+
+                <ul class="list-group">
+                  <li class="list-group-item" *ngFor="let object of menues | groupBy:'parant'">
+                    <b class="text-danger"><input type="checkbox" [(ngModel)]='object.act' (ngModelChange)="selectMainMenu(object);">
+                      {{object.key === 'undefined' ? '######' : object.key }}</b>
+                    <div class="list-group list-group-accent">
+                      <div *ngFor="let item of object.value" class="list-group-item list-group-item-accent-primary">
+                        <label class="checkboxlabel text-info" style="min-width: 150px;">
+                          <input type="checkbox" [(ngModel)]='item.act' (ngModelChange)="selectAll(item);">{{item.label}}</label>
+                        <span class="badge badge-secondary ml-1" style="text-transform: capitalize;background-color: #cce5fa;" *ngFor="let s of item.action">
+                          <input type="checkbox" value="" [(ngModel)]="s.act" (click)="deselectMenu(item)"> {{s.val}}
+                        </span>&nbsp;
+                      </div>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- <p-table [value]="items" *ngIf="selectdRole">
+            <ng-template pTemplate="caption">
+              Selected Role : {{selectdRole ? selectdRole.rolename : 'None'}}
+            </ng-template>
+            <ng-template pTemplate="header">
+              <tr>
+                <th translate>menu_name</th>
+                <th translate="">action</th>
+              </tr>
+              <tr>
+                <th colspan="2"><label><input type="checkbox" [(ngModel)]="checkallchk" (ngModelChange)="checkAll()">
+                    &nbsp;<span translate="">selectall</span></label></th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-menu let-rowIndex="rowIndex">
+              <tr class="ui-widget-header" *ngIf="group[menu.parant].index === rowIndex">
+                <td colspan="2">
+                  <span style="font-weight:bold" class="menuhead">{{menu.parant}}</span>
+                </td>
+              </tr>
+              <tr>
+                <td><label class="checkboxlabel">
+                    <input type="checkbox" [(ngModel)]='menu.act' (ngModelChange)="selectAll(menu);"> {{menu.label}}</label></td>
+                <td>
+                  <label class="checkbox-inline checkboxlabel" *ngFor="let s of menu.action">&nbsp;<input type="checkbox"
+                      value="" [(ngModel)]="s.act" (click)="deselectMenu(menu)"> {{s.val}} </label>&nbsp;
+                </td>
+              </tr>
+            </ng-template>
+
+          </p-table> -->
+
+
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Button trigger modal -->
+
+    </div>
+
+  </div>
+  <ng-template #template>
+    <div class="modal-header">
+      <h4 class="modal-title" translate>role</h4>
+      <button type="button" class="close" (click)="closeModal()" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <form name="form" (ngSubmit)="f.form.valid && save()" #f="ngForm" novalidate>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-sm-12">
+            <div class="form-group">
+              <label class="col-form-label"> {{'role' | translate}} <span class="text-danger">*</span></label>
+              <div class="controls">
+                <div class="input-prepend input-group">
+                  <input class="form-control" name="rolename" #rolename="ngModel" [(ngModel)]="roledata.rolename" size="16"
+                    type="text" autofocus="true" [ngClass]="{ 'is-invalid':  f.submitted && (rolename.dirty || rolename.touched) &&  rolename.invalid }" minlength="4" maxlength="12"
+                    pattern="^[-a-zA-Z0-9-()]+(\s+[-a-zA-Z0-9-()]+)*$" placeholder="{{'role' | translate}}" required />
+                </div>
+                <div *ngIf="(rolename.dirty || rolename.touched) &&  rolename.invalid" class="text-danger">
+                  <div *ngIf="rolename.errors.required">Role Name is required</div>
+                  <div *ngIf="!rolename.errors.required && rolename.dirty && !rolename.errors.minlength">Enter valid Role Name</div>
+                  <div *ngIf="!rolename.errors.required && rolename.errors.minlength">Role Name should be min 4-12 charater long.</div>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-form-label">{{'role_description' | translate}} <span class="text-danger">*</span></label>
+              <div class="controls">
+                <div class="input-prepend input-group">
+                  <textarea class="form-control" name="roledesc" #roledesc="ngModel" [(ngModel)]="roledata.roledesc" placeholder="{{'role_description' | translate}}" required></textarea>
+                </div>
+                <div *ngIf="(roledesc.dirty || roledesc.touched) &&  roledesc.invalid" class="text-danger">
+                  <div *ngIf="roledesc.errors.required">Role Description is required</div>
+                  <div *ngIf="!roledesc.errors.required && roledesc.dirty && !roledesc.errors.minlength">Enter valid Role Description</div>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="controls">
+                <div class="input-prepend input-group">
+                  <p-checkbox name="Active" value="1" label="{{'active' | translate}}" [(ngModel)]="roledata.active"
+                    binary="roledata.active"></p-checkbox>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-success btn-sm"><i class="fa fa-save"></i>&nbsp; {{'save' |
+          translate}}</button>
+      </div>
+    </form>
+  </ng-template>

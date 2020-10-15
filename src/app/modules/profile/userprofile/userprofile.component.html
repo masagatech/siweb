@@ -1,0 +1,253 @@
+<!-- <form name="form" id="form" #f="ngForm" novalidate>
+  <div class="card">
+    <div class=" card-body p-0">
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-3">
+            <div class="form-group">
+              <label class="col-form-label">Userid</label>
+            </div>
+
+            <div class="form-group">
+              <label class="col-form-label">Name</label>
+            </div>
+
+            <div class="form-group">
+              <label class="col-form-label">Email</label>
+            </div>
+            <div class="form-group">
+              <label class="col-form-label">Phone no</label>
+            </div>
+            <div class="form-group">
+              <label class="col-form-label">Active</label>
+            </div>
+          </div>
+
+
+          <div class="col-md-9">
+            <div class="form-group">
+              <input class="form-control" name="userid" id="userid" #userid="ngModel" [(ngModel)]="profile.userid"
+                type="text" autocomplete="off" autofocus="on" tabindex="1" readonly />
+            </div>
+            <div class="form-group">
+              <input class="form-control" name="name" #name="ngModel" id="name" [(ngModel)]="profile.name" type="text"
+                autocomplete="off" autofocus="on" tabindex="1" readonly />
+            </div>
+            <div class="form-group">
+              <input class="form-control" [(ngModel)]="profile.email" type="text" name="email" #email="ngModel"
+                id="email" autocomplete="off" autofocus="on" tabindex="1" readonly />
+            </div>
+            <div class="form-group">
+              <input class="form-control" [(ngModel)]="profile.mobileno" name="ph_no" #ph_no="ngModel" id="ph_no"
+                type="text" autocomplete="off" autofocus="on" tabindex="1" readonly />
+            </div>
+            <div class="form-group">
+              <input class="form-control" [(ngModel)]="profile.active" name="active" #active="ngModel" id="active"
+                type="text" autocomplete="off" autofocus="on" tabindex="1" readonly />
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</form> -->
+<ol class="breadcrumb">
+  <app-breadcrumb></app-breadcrumb>
+  <!-- Breadcrumb Menu-->
+  <li class="breadcrumb-menu">
+    <!-- <app-actionbtn [buttons]="buttons" [isfav]="isfav"></app-actionbtn> -->
+    <app-actionbtn [buttons]="buttons" (onaction)="buttonClicks($event)"></app-actionbtn>
+  </li>
+</ol>
+<ng-template #template>
+  <div class="modal-header">
+    <h4 class="modal-title" translate=""> Change Password</h4>
+    <button type="button" class="close"  (click)="closeModal()" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <!-- <p-dialog header="Title" [(visible)]="display" [style]="{width: '500px', height: '400px'}"> -->
+  <form name="form" (ngSubmit)="f.form.valid && save()" #f="ngForm" novalidate>
+    <div class="modal-body">
+      <div class="row">
+
+        <div class="col-sm-12">
+          <div class="form-group">
+            <label class="col-form-label">Old Password<span class="text-danger">*</span></label>
+            <input class="form-control" id="old_pass" name="old_pass" #old_pa ss="ngModel" type="password"
+             autocomplete="new-password"
+              [(ngModel)]="updatepass.old_pass" tabindex="1" [ngClass]="{ 'is-invalid': f.submitted &&  old_pass.invalid }"
+              placeholder="Old Password" />
+          </div>
+        </div>
+        <div *ngIf="f.submitted &&  old_pass.invalid" class="text-danger">
+          <div *ngIf="old_pass.errors.required">{{'password' | translate}} {{'is_required' | translate}}</div>
+          <div *ngIf="!old_pass.errors.required && old_pass.dirty">{{'enter_valid' | translate}} {{'password' |
+            translate}}</div>
+        </div>
+
+        <div class="col-sm-12">
+          <div class="form-group">
+            <label class="col-form-label">New Password<span class="text-danger">*</span></label>
+            <input class="form-control" id="new_pass" name="new_pass" #new_pass="ngModel" type="password" [(ngModel)]="updatepass.new_pass"
+            autocomplete="new-password" placeholder="New Password" tabindex="2" [ngClass]="{ 'is-invalid': f.submitted &&  new_pass.invalid }" />
+          </div>
+          <div *ngIf="f.submitted &&  new_pass.invalid" class="text-danger">
+            <div *ngIf="new_pass.errors.required">{{'password' | translate}} {{'is_required' | translate}}</div>
+            <div *ngIf="!new_pass.errors.required && new_pass.dirty">{{'enter_valid' | translate}} {{'password' |
+              translate}}</div>
+          </div>
+          <small>
+            <div *ngIf="f.submitted &&  new_pass.invalid" class="text-danger">
+              <div *ngIf=" new_pass.errors.required"> is_required</div>
+              <!-- <div *ngIf="!new_pass.errors.required && new_pass.dirty"> {{'val_code'| translate}}</div> -->
+            </div>
+          </small>
+
+
+        </div>
+        <div class="col-sm-12">
+          <div class="form-group">
+            <label class="col-form-label">Confirm Password<span class="text-danger">*</span></label>
+            <input class="form-control" id="cnf_pass" name="cnf_pass" #cnf_pass="ngModel" tabindex="3" [(ngModel)]="updatepass.cnf_pass"
+              type="password"  autocomplete="new-password" placeholder="Confirm Password" [ngClass]="{ 'is-invalid': f.submitted &&  cnf_pass.invalid }" />
+          </div>
+        </div>
+        <div *ngIf="f.submitted &&  new_pass.invalid" class="text-danger">
+          <div *ngIf="cnf_pass.errors.required">{{'password' | translate}} {{'is_required' | translate}}</div>
+          <div *ngIf="!cnf_pass.errors.required && cnf_pass.dirty">{{'enter_valid' | translate}} {{'password' |
+            translate}}</div>
+        </div>
+        <div *ngIf="updatepass.cnf_pass">
+          <small class="text-danger" *ngIf="updatepass.new_pass!=updatepass.cnf_pass" translate="">password_not_match</small>
+        </div>
+        <div *ngIf="f.submitted &&  new_pass.invalid" class="text-danger">
+          <div *ngIf="cnf_pass.errors.required">{{'password' | translate}} {{'is_required' | translate}}</div>
+          <div *ngIf="!cnf_pass.errors.required && cnf_pass.dirty">{{'enter_valid' | translate}} {{'password' |
+            translate}}</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-danger btn-sm" type="button" translate="" (click)="clear()" tabindex="6"><i class="fa fa-rotate-left"></i>
+        {{'reset' | translate}}</button>
+      <button class="btn text-white btn-success btn-sm" type="submit" (click)="save();" tabindex="5"><i class="fa fa-save"></i>&nbsp;
+        {{'save' |
+        translate}}</button>
+
+    </div>
+
+  </form>
+  <!-- </p-dialog> -->
+</ng-template>
+<div class="fixed-content">
+  <div class="row text-center">
+    <div class="col-md-2"></div>
+    <div class="col-md-8 mt-5">
+      <div class="card mx-4">
+
+        <div class="card-body p-4">
+          <div class="text-center">
+            <div style="
+              width: 153px;
+              background: url(https://www.fundacionwiese.org/storage/users/default.png);
+              background-repeat: no-repeat;
+              background-size: cover;
+              height: 153px;
+              margin-bottom: 0px;
+              top: -82px;
+              background-color: #ffffff;
+              border: 1px solid #c8ced3;"
+              class="avatar img-circle" alt="avatar">
+
+            </div>
+            <h1 class="display-5" style="margin-top:-65px">{{profile.name}}</h1>
+          </div>
+          <div class="input-group mb-3">
+            <div class="input-group-prepend">
+            </div>
+            <label>{{'userid' | translate}}</label>
+            <div class="input-group">
+              <div class="input-group-prepend">
+              </div>
+              <input class="form-control readonly" type="text" name="userid" id="userid" #userid="ngModel" [(ngModel)]="profile.userid"
+                readonly>
+            </div>
+          </div>
+
+          <div class="input-group mb-3">
+            <div class="input-group-prepend">
+            </div>
+            <label>{{'bevmail' | translate}}</label>
+            <div class="input-group">
+              <div class="input-group-prepend">
+              </div>
+              <input class="form-control readonly" type="text" name="bevmail" id="bevmail" #bevmail="ngModel" [(ngModel)]="profile.bevmail"
+                readonly>
+            </div>
+          </div>
+
+
+          <div class="input-group mb-3">
+            <div class="input-group-prepend">
+            </div>
+            <label>{{'regemail' | translate}}</label>
+            <div class="input-group">
+              <input class="form-control readonly" [(ngModel)]="profile.email" type="text" name="email" #email="ngModel"
+                id="email" readonly>
+            </div>
+          </div>
+          <div class="input-group mb-3">
+
+            <label>{{'mobileno' | translate}}</label>
+            <div class="input-group">
+              <div class="input-group-prepend">
+              </div>
+              <input class="form-control readonly" [(ngModel)]="profile.mobileno" name="ph_no" #ph_no="ngModel" id="ph_no"
+                readonly>
+            </div>
+          </div>
+          <div class="input-group mb-3">
+
+            <label>{{'ph1' | translate}}</label>
+            <div class="input-group">
+              <div class="input-group-prepend">
+              </div>
+              <input class="form-control readonly" [(ngModel)]="profile.phone1" name="ph_no1" #ph_no1="ngModel" id="ph_no1"
+                readonly>
+            </div>
+          </div>
+          <div class="input-group mb-3">
+
+            <label>{{'ph2' | translate}}</label>
+            <div class="input-group">
+              <div class="input-group-prepend">
+              </div>
+              <input class="form-control readonly" [(ngModel)]="profile.phone2" name="ph_no2" #ph_no2="ngModel" id="ph_no2"
+                readonly>
+            </div>
+          </div>
+          <!-- <div class="input-group mb-3">
+
+            <label>Active</label>
+            <div class="input-group">
+
+              <input class="form-control readonly" [(ngModel)]="profile.active" name="active" #active="ngModel" id="active"
+                readonly>
+            </div>
+          </div> -->
+
+          <!-- <button class=" btn-sm bg-info" type="button" tabindex="5">Edit
+        </button> -->
+          <!-- <button class="btn btn-block btn-success" type="button"> Edit</button> -->
+          <div class="input-group mb-3 text-right">
+            <a role="button" class="btn btn-xs btn-info pull-right text-white" (click)="add()">Change Password</a>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </div>

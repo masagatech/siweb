@@ -1,0 +1,111 @@
+<!-- <p-scrollPanel [style]="{width: '90%', height: 'auto'}">
+   -->
+
+<p-table [columns]="selectedColumns" [value]="gridData" #dataTable dataKey="id" [selectionMode]="'single'"
+  [paginator]="true" [rows]='20' [lazy]="true" [totalRecords]='totalRecords' (onLazyLoad)="bindGrid($event)"
+  [alwaysShowPaginator]="false" [rowsPerPageOptions]="[10,15,20,50,100]" [sortField]="" [sortOrder]="1"
+  [resizableColumns]="true" [scrollable]="true" columnResizeMode="expand" sortMode="multiple">
+  <ng-template pTemplate="caption">
+    <div class="row">
+      <div class="col-md-2 pr-1" style="text-align:left;" [ngClass]="{'gridSearchWidth': (controlName=='role')}">
+        <p-multiSelect [options]="cols" [(ngModel)]="selectedColumns" optionLabel="column_label"
+          selectedItemsLabel="{0} columns selected" [style]="{minWidth: '100%'}" [showToggleAll]="false"
+          defaultLabel="Choose Columns" (onChange)="getDataOnSelectedColumns()"></p-multiSelect>
+      </div>
+      <div class="text-left pl-0 {{(advt.searchList.length>0)?'col-md-4':'col-md-5'}}" [ngClass]="{'gridSearchInputWidth': controlName=='role'}
+        ">
+        <div class="input-group" *ngIf="inputFilter.show">
+          <div class="input-group-prepend">
+            <select (change)="onFilterColChange($event)" [(ngModel)]="inputFilterCol" style="width:100px;">
+              <option [value]="f.column_name" *ngFor="let f of inputFilterArr">{{f.column_label}}</option>
+            </select>
+          </div>
+          <input *ngIf="!showDDL" type="text" class="form-control" [(ngModel)]="inputFilter.keyword"
+            placeholder="Search {{inputFilter.column_label}} here" (keyup.enter)="onInputFilter()">
+
+          <!-- ddl list -->
+
+          <select class="form-control" [(ngModel)]="inputFilter.keyword" *ngIf="showDDL" (change)="onInputFilter()">
+            <option value="">Select Status</option>
+            <option [value]="item.id" *ngFor="let item of dataList">{{item.name}}</option>
+          </select>
+
+
+
+          <div class="input-group-append">
+            <button class="btn btn-primary pb-0 pt-0" (click)="onInputFilter()"><i class="fa fa-search"></i></button>
+          </div>
+        </div>
+      </div>
+      <div class="pl-0 col-md-3" *ngIf="advt.searchList.length>0">
+        <div class="form-group">
+          <select class="form-control" [(ngModel)]="advt.ddlSearches" (change)="advt.onStoredSearch($event)">
+            <option [value]="''">Select saved search</option>
+            <option [value]="b.id" *ngFor="let b of advt.searchList">{{b.filterName}}</option>
+          </select>
+        </div>
+      </div>
+      <div class="pull-right text-right col-md-3" style="position: absolute;right: 0;top: 10px;">
+        <button class="btn btn-danger btn-xs mr-2" *ngIf="advt.isFilterOn" translate="" (click)="clearfilter()"><i
+            class="fa fa-rotate-left"></i> reset_filter</button>
+        {{totalRecords}} Record<span *ngIf="gridData.length>1">s</span>
+      </div>
+    </div>
+  </ng-template>
+  <ng-template pTemplate="colgroup" let-columns>
+    <colgroup>
+      <col *ngFor="let col of columns">
+    </colgroup>
+  </ng-template>
+  <ng-template pTemplate="header" let-columns>
+    <tr>
+      <th width="{{actionWidth}}px" [ngStyle]="{'text-align':'center'}" class="action_td" translate=""
+        *ngIf="actionButtons.length>0 && columns.length>0" pResizableColumn> Action</th>
+      <th *ngFor="let col of columns;let i=index;" [ngStyle]="col.stylejson" pResizableColumn>
+        <span [pSortableColumn]="col.column_name">{{col.column_label}}</span>
+        <p-sortIcon [field]="col.column_name" [pSortableColumn]="col.column_name"></p-sortIcon>
+      </th>
+
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-rowData let-columns="columns">
+    <tr [ngClass]="{'newrec': rowData['isnew']}">
+      <td class="text-center action_td" width="{{actionWidth}}px" [ngStyle]="{ 'text-overflow':'unset'}"
+        *ngIf="actionButtons.length>0 && columns.length>0">
+        <button *ngFor="let a of actionButtons" createDir (onCreateEvt)="oncreate(a, rowData)"
+          class="btn btn-{{rowData[a.id+'_color'] ||  a.bg}} btn-xs text-{{a.color}} mr-1"
+          [disabled]="(rowData['id']==global.getUser().id && a.text!='Edit')" translate=""
+          (click)="_onAction(a,rowData)" title="{{rowData[a.id] || a.text}}" type="{{a.type || 'button'}}">
+          <i *ngIf="(a.btnstyle === undefined || a.btnstyle === 2 || a.btnstyle === 0)"
+            class="{{rowData[a.id+'_iconi'] || (a.iconi ? a.iconi : 'icon-'+ a.icon)}}"></i>
+          <span
+            *ngIf="(a.btnstyle === undefined || a.btnstyle === 2 || a.btnstyle === 1)">{{rowData[a.id] || a.text}}</span>
+        </button>
+        <!-- <button *ngFor="let a of actionButtons" createDir (onCreateEvt)="oncreate(a, rowData)" class="btn btn-{{a.bg}} btn-xs text-{{a.color}} mr-1"
+          translate="" (click)="_onAction(a,rowData)" type="{{a.type || 'button'}}">{{rowData[a.id] || a.text}}</button> -->
+      </td>
+      <td *ngFor="let col of columns;let i=index;" title="{{rowData[col.column_name]}}" [ngStyle]="col.stylejson">
+        <ng-container *ngTemplateOutlet="loading;context:{cols:col,rows:rowData}"></ng-container>
+      </td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="summary">
+    <div class="text-center" *ngIf="gridData.length=='0' && !isLoading">No record available</div>
+    <div class="text-center" *ngIf="isLoading">Loading Data...</div>
+  </ng-template>
+</p-table>
+<app-advancesearch [controlName]="controlName" style="display:none" #advt (onAdvanceSearch)="onAdvanceSearch($event)"
+  [cols]="cols"></app-advancesearch>
+
+<ng-template #loading let-cols="cols" let-rows="rows">
+  <div [ngSwitch]="cols.column_type">
+    <span *ngSwitchCase="1">{{rows[cols.column_name]}}</span>
+    <span *ngSwitchCase="2">{{rows[cols.column_name] | date:dateformat}}</span>
+    <span *ngSwitchCase="3"><a (click)="openWindow(cols.column_name,rows);" class="text-primary">View
+        <i class="fa fa-external-link"></i></a></span>
+    <span *ngSwitchCase="4"><a (click)="openWindow(cols.column_name,rows);"
+        class="text-primary">{{rows[cols.column_name]}}</a></span>
+  </div>
+</ng-template>
+<!-- 
+</p-scrollPanel> -->
